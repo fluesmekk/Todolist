@@ -1,0 +1,75 @@
+
+#app {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+
+
+.pageTask {
+ display: flex;
+ flex-direction: column;
+ width: 100%;
+}
+
+
+.select {
+    height: auto;
+    width: 20%;
+    
+}
+
+.select1 {
+    background-color: rgb(221, 212, 174);
+}
+
+.select2 {
+    background-color:rgb(206, 201, 178);
+}
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+}
+
+
+.task {
+    align-items: center;
+    margin-top: 7%;
+    width: 40%;
+    display: flex;
+    background-color: rgb(221, 212, 174);
+    flex-direction: column;
+}
+
+.tasks{
+    background-color:rgb(206, 201, 178);
+    width: 100%;
+    padding-top: 2px;
+}
+
+.urgency {
+    background-color:rgb(175, 172, 157);
+    width: 100%;
+    padding-top: 2px;
+}
+
+.deadline {
+    background-color:rgb(206, 201, 178);
+    width: 100%;
+    padding-top: 2px;
+}
+
+.button {
+    background-color:rgb(206, 201, 178);
+    width: 100%;
+
+}
