@@ -4,9 +4,16 @@ const model = {
         inputUrgency: '',
         inputDeadline: '',
     },
+
+    inputFromChange: {
+        inputTask: '',
+        inputUrgency: '',
+        inputDeadline: '',
+    },
     localTasks : [
 
     ],
+
     localTasksDone : [
         
     ]

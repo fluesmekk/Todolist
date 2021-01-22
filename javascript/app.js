@@ -41,7 +41,7 @@
     })
 
 
-    db.collection('tasklistDone').onSnapshot(snapshot => {
+    db.collection('tasklistDone').orderBy('dateDone').onSnapshot(snapshot => {
         let changes = snapshot.docChanges();
         changes.forEach(change => {
             if(change.type == 'added') {
@@ -59,101 +59,39 @@
     })
 
 
-
-
-
-function deleteTask(id) {
-    db.collection('tasklist').doc(id).delete();
-    
-}
-
-function renderTask(doc) {
-    model.localTasks.push(
-        {
-            id: doc.id,
-            task: doc.data().task,
-            urgency: doc.data().urgency,
-            deadline: doc.data().deadline,
-        }
-    )
-}
-
-function renderTaskDone(doc) {
-    model.localTasksDone.push(
-        {
-            id: doc.id,
-            task: doc.data().task,
-            urgency: doc.data().urgency,
-            deadline: doc.data().deadline,
-            dateDone: doc.data().dateDone,
-        }
-    )
-}
-
-
-function removeTask(doc) {
-    for (let i = 0; i < model.localTasks.length; i++) {
-        if (model.localTasks[i].id == doc.id) {
-            model.localTasks.splice(i, 1);
-        }
-    }
-}
-
-function addTask() {
-    d = new Date(model.inputs.inputDeadline).toLocaleDateString()
-    db.collection('tasklist').add({
-        task: model.inputs.inputTask,
-        urgency: model.inputs.inputUrgency,
-        deadline: d
-    })
-}
-
-function changeTask(doc) {
-    for (let i = 0; i < model.localTasks.length; i++) {
-        if (model.localTasks[i].id == doc.id) {
-            model.localTasks[i].task = doc.data().task
-            model.localTasks[i].urgency = doc.data().urgency
-            model.localTasks[i].deadline = doc.data().deadline
-        }
-    }
-    updateView() 
-}
 var tasklist = 'tasklist'
-function changeTaskList() {
-    if (tasklist == 'tasklist') {
-        tasklist = 'tasklistDone'
-    } else {
-        tasklist = 'tasklist'
-    }
-    console.log(tasklist)
-    updateView();
-}
-
-function taskDone(index) {
-    deleteTask(model.localTasks[index].id)
-    db.collection('tasklistDone').add({
-        task: model.localTasks[index].task,
-        urgency: model.localTasks[index].urgency,
-        deadline: model.localTasks[index].deadline,
-        dateDone: new Date().toLocaleDateString(),
-    })
-}
-
+var editMode = false;
 let html = '';
+var disable = false;
 updateView()
 function updateView() {
     var tasks = '';
     if (tasklist == 'tasklist') {
         for (let i = 0; i < model.localTasks.length; i++) {
-            tasks += `
-            <div class="task">
-            <div class="tasks">Oppgave: ${model.localTasks[i].task}</div>
-            <div class="urgency">Prioritet: ${model.localTasks[i].urgency}</div>
-            <div class="deadline">Frist: ${model.localTasks[i].deadline}</div>
-            <button class="button" onclick="taskDone(${i})">ferdiggjør</button>
-            </div>
             
-            `;
+            if (model.localTasks[i].editMode) {
+                disable = true;
+                tasks += `
+                <div class="task">
+                <input class="tasks" value="${model.localTasks[i].task}" oninput="model.inputFromChange.inputTask = this.value"></input>
+                <input class="urgency" value="${model.localTasks[i].urgency}" oninput="model.inputFromChange.inputUrgency = this.value"></input>
+                <input class="deadline" value="${model.localTasks[i].deadline}" oninput="model.inputFromChange.inputDeadline = this.value"></input>
+                <button class="button" onclick="saveTask(${i})">Lagre</button>
+                </div>
+                `
+            } else if (!model.localTasks[i].editMode) {
+                tasks += `
+                <div class="task">
+                <div class="tasks">Oppgave: ${model.localTasks[i].task}</div>
+                <div class="urgency">Prioritet: ${model.localTasks[i].urgency}</div>
+                <div class="deadline">Frist: ${model.localTasks[i].deadline}</div>
+                <button class="button" onclick="taskDone(${i})">Ferdiggjør</button>
+                <button ${disable ? 'disabled' : ''} class="button" onclick="editTask(${i})">Endre</button>
+                </div>
+                
+                `;
+            }
+            
         }
     }
     if (tasklist == 'tasklistDone') {
@@ -174,16 +112,15 @@ function updateView() {
     html = `
             <div class="page">
                 <div class="select">
-                    <div class="select1"onclick="changeTaskList()">Tasks yet completed</div>
-                    <div class="select2"onclick="changeTaskList()">Finished Task</div>
+                    <div class="select1"onclick="changeTaskList()"><button>Change page</button></div>
                     <div class="tasklist">${tasklist == 'tasklistDone' ? 'Ferdige Tasks' : 'Uferdige Tasks'}</div>
                 </div>
                 ${tasklist == 'tasklistDone' ? '' : `
                 <div class="inputs">
-                    Task: <input oninput="model.inputs.inputTask = this.value"></input>
-                    Urgency: <input oninput="model.inputs.inputUrgency = this.value"></input>  
-                    Deadline: <input oninput="model.inputs.inputDeadline = this.value" type="date"></input>  
-                    <button onclick="addTask()">Submit</button>  
+                    Task: <input class="inputsChild" oninput="model.inputs.inputTask = this.value"></input>
+                    Urgency: <input class="inputsChild" oninput="model.inputs.inputUrgency = this.value"></input>  
+                    Deadline: <input class="inputsChild" oninput="model.inputs.inputDeadline = this.value" type="date"></input>  
+                    <button class="inputsChild" onclick="addTask()">Submit</button>  
                 </div>`
                 }
                 
@@ -197,3 +134,6 @@ function updateView() {
     `;
     document.getElementById('app').innerHTML = html;
 }
+
+
+
