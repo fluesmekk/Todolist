@@ -4,6 +4,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-firestore.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
+<link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css" />
     
 </head>
 
@@ -30,7 +32,9 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        var ui = new firebaseui.auth.AuthUI(firebase.auth());
     </script>
+    
     <script src="javascript/model.js"></script>
     <script src="javascript/app.js"></script>
     <script src="javascript/deleteTask.js"></script>
